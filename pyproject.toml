@@ -7,10 +7,19 @@ requires-python = ">=3.13"
 dependencies = [
     "black>=25.1.0",
     "elevenlabs>=1.57.0",
+    "fastapi>=0.115.12",
     "flake8>=7.2.0",
-    "graphiti-core>=0.11.3",
+    "google-genai>=1.13.0",
+    "graphiti-core[google-genai]>=0.11.3",
     "isort>=6.0.1",
     "modal>=0.74.39",
     "openai>=1.76.2",
     "pre-commit>=4.2.0",
+    "requests>=2.32.3",
 ]
+
+[tool.isort]
+profile = "black"
+line_length = 79
+multi_line_output = 3
+include_trailing_comma = true
