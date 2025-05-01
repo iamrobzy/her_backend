@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "black>=25.1.0",
-    "elevenlabs>=1.57.0",
+    "elevenlabs==1.54.0",
     "fastapi>=0.115.12",
     "flake8>=7.2.0",
     "google-genai>=1.13.0",
@@ -16,6 +16,13 @@ dependencies = [
     "openai>=1.76.2",
     "pre-commit>=4.2.0",
     "requests>=2.32.3",
+    "psycopg2-binary>=2.9.10",
+    "python-dotenv>=1.1.0",
+    "sqlalchemy>=2.0.40",
+    "sqlmodel>=0.0.24",
+    "twilio>=9.5.2",
+    "uvicorn>=0.34.2",
+    "websockets>=15.0.1",
 ]
 
 [tool.isort]
