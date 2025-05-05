@@ -1,10 +1,11 @@
 import asyncio
-from typing import Callable
+import base64
 import queue
 import threading
-import base64
+from typing import Callable
+
 from elevenlabs.conversational_ai.conversation import AudioInterface
-import websockets
+
 
 class TwilioAudioInterface(AudioInterface):
     def __init__(self, websocket):

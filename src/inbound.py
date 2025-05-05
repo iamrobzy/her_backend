@@ -1,12 +1,14 @@
 import json
-import traceback
 import os
+import traceback
+
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
-from twilio.twiml.voice_response import VoiceResponse, Connect
 from elevenlabs import ElevenLabs
 from elevenlabs.conversational_ai.conversation import Conversation
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
+from twilio.twiml.voice_response import Connect, VoiceResponse
+
 from twilio_audio_interface import TwilioAudioInterface
 
 # Load environment variables
@@ -20,9 +22,11 @@ eleven_labs_client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
 ELEVEN_LABS_AGENT_ID = os.getenv("AGENT_ID")
 print(f"ELEVEN_LABS_AGENT_ID: {ELEVEN_LABS_AGENT_ID}")
 
+
 @app.get("/")
 async def root():
     return {"message": "Twilio-ElevenLabs Integration Server"}
+
 
 @app.api_route("/twilio/inbound_call", methods=["GET", "POST"])
 async def handle_incoming_call(request: Request):
@@ -33,6 +37,7 @@ async def handle_incoming_call(request: Request):
     connect.stream(url=f"wss://{host}/media-stream-eleven")
     response.append(connect)
     return HTMLResponse(content=str(response), media_type="application/xml")
+
 
 @app.websocket("/media-stream-eleven")
 async def handle_media_stream(websocket: WebSocket):
@@ -74,6 +79,8 @@ async def handle_media_stream(websocket: WebSocket):
             conversation.end_session()
             conversation.wait_for_session_end()
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

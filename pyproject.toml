@@ -23,6 +23,8 @@ dependencies = [
     "twilio>=9.5.2",
     "uvicorn>=0.34.2",
     "websockets>=15.0.1",
+    "zep-cloud>=2.12.1",
+    "autopep8>=2.3.2",
 ]
 
 [tool.isort]

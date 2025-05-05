@@ -1,8 +1,9 @@
 # Download the helper library from https://www.twilio.com/docs/python/install
 import os
-from twilio.rest import Client
 
 from dotenv import load_dotenv
+from twilio.rest import Client
+
 load_dotenv()  # take environment variables
 
 # Find your Account SID and Auth Token at twilio.com/console
