@@ -1,27 +1,19 @@
-from sqlmodel import Field, SQLModel
-from typing import Any, Dict, List, Optional
-from datetime import datetime, timezone, date
-from pydantic import BaseModel, ConfigDict
-from dotenv import load_dotenv
-import sqlalchemy as sa
 import os
+from datetime import date, datetime, timezone
+from typing import Optional
+
+import sqlalchemy as sa
+from dotenv import load_dotenv
 from sqlmodel import (
-    Index,
+    Date,
+    DateTime,
     Field,
     SQLModel,
-    UniqueConstraint,
-    Column,
-    DateTime,
-    String,
-    ARRAY,
-    JSON,
-    Date,
     create_engine,
-    Relationship,
 )
 
-
 load_dotenv()
+
 
 class User(SQLModel, table=True):
     __tablename__ = "users"  # type: ignore
@@ -33,7 +25,9 @@ class User(SQLModel, table=True):
     name: Optional[str] = Field(max_length=50)
     telephone_number: str = Field(max_length=20, unique=True, index=True)
     birthday: Optional[date] = Field(default=None, sa_type=Date)
-    last_message_at: Optional[datetime] = Field(default=None, sa_type=sa.DateTime(timezone=True))  # type: ignore
+    last_message_at: Optional[datetime] = Field(
+        default=None, sa_type=sa.DateTime(timezone=True)
+    )  # type: ignore
     created_at: Optional[datetime] = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         sa_type=DateTime(timezone=True),  # type: ignore
@@ -57,7 +51,9 @@ class Conversations(SQLModel, table=True):
     """ FIELDS """
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="users.id", index=True, ondelete="CASCADE")
+    user_id: int = Field(
+        foreign_key="users.id", index=True, ondelete="CASCADE"
+    )
 
     created_at: Optional[datetime] = Field(
         default_factory=lambda: datetime.now(timezone.utc),
@@ -74,7 +70,9 @@ class Milestone(SQLModel, table=True):
 
     """ FIELDS """
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="users.id", index=True, ondelete="CASCADE")
+    user_id: int = Field(
+        foreign_key="users.id", index=True, ondelete="CASCADE"
+    )
     title: str = Field(max_length=200)
     description: Optional[str] = Field(default=None)
     goal_title: Optional[str] = Field(default=None, max_length=200)
@@ -94,8 +92,6 @@ class Milestone(SQLModel, table=True):
         },
         nullable=False,
     )
-
-
 
 
 if __name__ == "__main__":
