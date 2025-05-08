@@ -1,6 +1,8 @@
 import os
 from datetime import date, datetime, timezone
+from enum import Enum
 from typing import Optional
+from uuid import uuid4
 
 import sqlalchemy as sa
 from dotenv import load_dotenv
@@ -64,8 +66,56 @@ class Conversations(SQLModel, table=True):
     )
 
 
+class Resources(SQLModel):
+    citations: list[str]
+    advice: str
+
+
+class Subtask(SQLModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    description: str
+    estimated_minutes: int
+    completed: bool = False
+
+
+class Metric(SQLModel):
+    measurement: str
+    target_value: Optional[int] = None
+
+
 class Milestone(SQLModel, table=True):
     __tablename__ = "milestones"  # type: ignore
+    model_config = {"arbitrary_types_allowed": True}  # type: ignore
+
+    """ FIELDS """
+    id: Optional[int] = Field(default=None, primary_key=True)
+    goal_id: int = Field(foreign_key="goals.id", index=True, ondelete="CASCADE")
+    title: str = Field(max_length=200)
+    description: Optional[str] = Field(default=None)
+    expected_completion_date: Optional[str] = Field(default=None)
+    estimated_hours: Optional[int] = Field(default=None)
+    completed: bool = Field(default=False)
+    resources: Optional[list[Resource]] = Field(default=None, sa_type=sa.JSON)
+    subtasks: Optional[list[Subtask]] = Field(default=None, sa_type=sa.JSON)
+    metric: Optional[Metric] = Field(default=None, sa_type=sa.JSON)
+    created_at: Optional[datetime] = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_type=DateTime(timezone=True),  # type: ignore
+        sa_column_kwargs={"server_default": sa.func.now()},
+        nullable=False,
+    )
+    updated_at: Optional[datetime] = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_type=DateTime(timezone=True),  # type: ignore
+        sa_column_kwargs={
+            "onupdate": lambda: datetime.now(timezone.utc),
+        },
+        nullable=False,
+    )
+
+
+class Goals(SQLModel, table=True):
+    __tablename__ = "goals"  # type: ignore
     model_config = {"arbitrary_types_allowed": True}  # type: ignore
 
     """ FIELDS """
@@ -75,9 +125,9 @@ class Milestone(SQLModel, table=True):
     )
     title: str = Field(max_length=200)
     description: Optional[str] = Field(default=None)
-    goal_title: Optional[str] = Field(default=None, max_length=200)
-    goal_description: Optional[str] = Field(default=None)
     completed: bool = Field(default=False)
+    target_date: datetime = Field(default=datetime.now(timezone.utc))
+    estimated_total_hours: int = Field(default=0)
     created_at: Optional[datetime] = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         sa_type=DateTime(timezone=True),  # type: ignore

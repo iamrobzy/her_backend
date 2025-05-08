@@ -8,6 +8,7 @@ from zep_cloud.client import Zep
 
 from src.utils.api import format_error_response
 from src.utils.zep import convert_to_zep_messages
+from src.db.llm_model import populate
 
 app = modal.App("HER")
 
@@ -214,6 +215,43 @@ async def get_conversation_context(user_id, agenda):
         }
     except Exception as e:
         return format_error_response(str(e))
+
+
+@app.function(image=image, secrets=[modal.Secret.from_name("HER")])
+async def get_advice(graph_context):
+    url = "https://api.perplexity.ai/chat/completions"
+    payload = {
+            "model": "sonar",
+            "messages": [
+                {
+                "role": "system",
+                "content": "Give expert advice to the user based on domain knowledge. Give a detailed answer given your sources. No introduction needed."
+            },
+            {
+                "role": "user",
+                "content": f"Give me advice on the to achieve the following goals and milestones: {graph_context}"
+            }
+        ]
+    }
+    headers = {
+        "Authorization": "Bearer " + os.getenv("PPXL_API_KEY"),
+        "Content-Type": "application/json"
+    }
+    response = requests.request("POST", url, json=payload, headers=headers)
+    response_json = json.loads(response.content)
+    citations, advice = response_json['citations'], response_json['choices'][0]['message']['content']
+    return citations, advice
+
+
+@app.function(image=image, secrets=[modal.Secret.from_name("HER")])
+@modal.fastapi_endpoint()
+async def generate_agenda(user_id):
+
+    graph_query = "What are the goals and milestones of this user? How much time does the user plan to dedicate to execute the goals?"
+    graph_context = get_conversation_context(user_id=user_id, agenda=graph_query)
+    citations, advice = get_advice(graph_context)
+    goal = populate(advice)
+    return goal
 
 
 # Todo: implement a tool to get some context/information live in conversation
