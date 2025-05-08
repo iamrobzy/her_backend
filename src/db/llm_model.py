@@ -3,8 +3,8 @@ from typing import Optional
 from datetime import datetime, timezone
 from openai import OpenAI
 from sqlmodel import SQLModel
-import os
 from pydantic import BaseModel
+import os
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
@@ -44,7 +44,7 @@ def populate(query):
             {"role": "system", "content": "You are an administator populating a database. You will be given a query describing a goal and you will stucture it appropraitely into milestones, subtasks and metrics"},
             {
                 "role": "user",
-                "content": query,
+                "content": f"{query}",
             },
         ],
         text_format=Goal,
