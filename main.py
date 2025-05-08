@@ -75,32 +75,102 @@ async def update_user(first_name, last_name, user_id, email):
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("HER")])
-@modal.fastapi_endpoint()
-async def add_conversation(session_id, user_id):
+@modal.fastapi_endpoint(method="POST")
+async def add_conversation(session_id, user_id, messages=None):
     try:
+        print(
+            f"Adding conversation for session_id: {session_id}, "
+            f"user_id: {user_id}"
+        )
+        print(f"Received messages: {messages}")
+
         zep = Zep(api_key=os.environ.get("ZEP_API_KEY"))
+        print("Zep client initialized successfully")
 
         zep.memory.add_session(
             session_id=session_id,
             user_id=user_id,
         )
+        print(f"Session {session_id} added to Zep successfully")
 
-        client = ElevenLabs(
-            api_key=os.environ.get("ELEVENLABS_API_KEY"),
-        )
+        if messages:
+            # Use directly provided messages
+            print("Using provided messages...")
+            try:
+                converted_messages = convert_to_zep_messages(messages)
+                print(
+                    f"Successfully converted {len(converted_messages)} "
+                    f"messages"
+                )
+            except Exception as e:
+                error_msg = f"Failed to convert messages: {str(e)}"
+                print(f"Error: {error_msg}")
+                return format_error_response(error_msg, status_code=400)
+        else:
+            # Fetch from ElevenLabs if no messages provided
+            print("No messages provided, fetching from ElevenLabs...")
+            client = ElevenLabs(
+                api_key=os.environ.get("ELEVENLABS_API_KEY"),
+            )
+            print("ElevenLabs client initialized successfully")
 
-        conversation = client.conversational_ai.get_conversation(
-            conversation_id=session_id,
-        )
-        messages = convert_to_zep_messages(conversation)
-        zep.memory.add(session_id=session_id, messages=messages)
+            print(
+                f"Fetching conversation from ElevenLabs with "
+                f"conversation_id: {session_id}"
+            )
+            conversation = client.conversational_ai.get_conversation(
+                conversation_id=session_id,
+            )
+            print(f"ElevenLabs conversation retrieved: {conversation}")
+
+            if not conversation:
+                error_msg = (
+                    f"No conversation found for conversation_id: {session_id}"
+                )
+                print(f"Error: {error_msg}")
+                return format_error_response(error_msg, status_code=404)
+
+            print("Converting conversation to Zep messages...")
+            converted_messages = convert_to_zep_messages(conversation)
+
+        if not converted_messages:
+            error_msg = (
+                "Failed to convert conversation to Zep messages: "
+                "no messages returned"
+            )
+            print(f"Error: {error_msg}")
+            return format_error_response(error_msg, status_code=400)
+
+        print(f"Converted messages count: {len(converted_messages)}")
+
+        # Log each message
+        for i, msg in enumerate(converted_messages):
+            print(
+                f"Message {i+1}: role_type={msg.role_type}, "
+                f"content_length={len(msg.content)}"
+            )
+
+        print(f"Adding {len(converted_messages)} messages to Zep memory")
+        zep.memory.add(session_id=session_id, messages=converted_messages)
+        print("Messages added to Zep memory successfully")
 
         return {
             "status": "success",
             "data": {"session_id": session_id, "user_id": user_id},
             "message": "Conversation added successfully",
         }
+    except ValueError as e:
+        error_msg = f"Invalid conversation data: {str(e)}"
+        print(f"Error: {error_msg}")
+        import traceback
+
+        traceback.print_exc()
+        return format_error_response(error_msg, status_code=400)
     except Exception as e:
+        print(f"Error in add_conversation: {str(e)}")
+        import traceback
+
+        traceback.print_exc()
         return format_error_response(str(e))
 
 
