@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import uuid
@@ -8,6 +9,7 @@ from elevenlabs import ElevenLabs
 from zep_cloud.client import Zep
 
 from src.db.llm_model import populate
+from src.make_call import outbound_call
 from src.utils.api import format_error_response
 from src.utils.zep import convert_to_zep_messages, query_zep
 
@@ -314,6 +316,43 @@ async def generate_milestones(user_id):
         }
     except Exception as e:
         print(f"Error in generate_milestones: {str(e)}")
+        import traceback
+
+        traceback.print_exc()
+        return format_error_response(str(e))
+
+
+@app.function(image=image, secrets=[modal.Secret.from_name("HER")])
+@modal.fastapi_endpoint()
+async def call_int_ten_seconds(user_id):
+    try:
+        print(f"Starting call_int_ten_seconds for user_id: {user_id}")
+        # set a timer for 10 seconds
+        await asyncio.sleep(10)
+        first_message = """Hey Robert, you are literally the goat!
+                         How is the hackathon going?"""
+        prompt = """You're an over-the-top,
+                    high-energy hypeman whose only mission is to
+                    hype someone up like they're about to walk on
+                    stage in front of 100,000 screaming fans.
+                    Use slang, rhythm, and pure fire energy.
+                    No chill allowed. Go all in on motivation,
+                    compliments, and wild metaphors. Ready?
+                    Hype me up like I'm the main event!"""
+        outbound_agent_id = os.getenv("OUTBOUND_AGENT_ID")
+        agent_phone_number_id = os.getenv("AGENT_PHONE_NUMBER_ID")
+        to_number = os.getenv("TO_NUMBER")
+        outbound_call(
+            first_message,
+            prompt,
+            outbound_agent_id,
+            agent_phone_number_id,
+            to_number,
+        )
+
+        return {"status": "success"}
+    except Exception as e:
+        print(f"Error in call_int_ten_seconds: {str(e)}")
         import traceback
 
         traceback.print_exc()
