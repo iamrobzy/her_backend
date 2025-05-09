@@ -1,14 +1,15 @@
+import json
 import os
 import uuid
 
 import modal
+import requests
 from elevenlabs import ElevenLabs
-from zep_cloud import Message
 from zep_cloud.client import Zep
 
-from src.utils.api import format_error_response
-from src.utils.zep import convert_to_zep_messages
 from src.db.llm_model import populate
+from src.utils.api import format_error_response
+from src.utils.zep import convert_to_zep_messages, query_zep
 
 app = modal.App("HER")
 
@@ -19,6 +20,7 @@ image = modal.Image.debian_slim().pip_install(
         "zep-cloud",
         "elevenlabs",
         "python-dotenv",
+        "openai",
     ]
 )
 image = image.add_local_dir("src", "/root/src")
@@ -195,15 +197,16 @@ async def get_context_from_a_session(session_id):
 @modal.fastapi_endpoint()
 async def get_conversation_context(user_id, agenda):
     try:
+        print(f"Starting get_conversation_context for user_id: {user_id}")
+        print(f"Agenda: {agenda}")
+
         session_id = uuid.uuid4().hex
+        print(f"Generated new session_id: {session_id}")
+
         zep = Zep(api_key=os.environ.get("ZEP_API_KEY"))
-        zep.memory.add_session(user_id=user_id, session_id=session_id)
-        zep.memory.add(
-            session_id=session_id,
-            messages=[Message(role_type="system", content=agenda)],
-        )
-        memory = zep.memory.get(session_id=session_id)
-        context_string = memory.context
+        print("Successfully initialized Zep client")
+        context_string = query_zep(user_id, session_id, agenda, zep)
+
         return {
             "status": "success",
             "data": {
@@ -214,44 +217,107 @@ async def get_conversation_context(user_id, agenda):
             "message": "Conversation context retrieved successfully",
         }
     except Exception as e:
+        print(f"Error in get_conversation_context: {str(e)}")
+        import traceback
+
+        traceback.print_exc()
         return format_error_response(str(e))
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("HER")])
 async def get_advice(graph_context):
+    print(
+        f"Starting get_advice with context length: {len(str(graph_context))}"
+    )
     url = "https://api.perplexity.ai/chat/completions"
     payload = {
-            "model": "sonar",
-            "messages": [
-                {
+        "model": "sonar",
+        "messages": [
+            {
                 "role": "system",
-                "content": "Give expert advice to the user based on domain knowledge. Give a detailed answer given your sources. No introduction needed."
+                "content": (
+                    "Give expert advice to the user based on domain "
+                    "knowledge. Give a detailed answer given "
+                    "your sources. No introduction needed."
+                ),
             },
             {
                 "role": "user",
-                "content": f"Give me advice on the to achieve the following goals and milestones: {graph_context}"
-            }
-        ]
+                "content": (
+                    f"Give me advice on how to achieve the following goals "
+                    f"and milestones: {graph_context}"
+                ),
+            },
+        ],
     }
     headers = {
         "Authorization": "Bearer " + os.getenv("PPXL_API_KEY"),
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
+    print("Sending request to Perplexity API")
     response = requests.request("POST", url, json=payload, headers=headers)
+    print(
+        f"Received response from Perplexity API: "
+        f"status_code={response.status_code}"
+    )
     response_json = json.loads(response.content)
-    citations, advice = response_json['citations'], response_json['choices'][0]['message']['content']
+    citations, advice = (
+        response_json["citations"],
+        response_json["choices"][0]["message"]["content"],
+    )
+    print(f"Extracted advice with length: {len(advice)}")
     return citations, advice
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("HER")])
-@modal.fastapi_endpoint()
-async def generate_agenda(user_id):
+@modal.fastapi_endpoint(method="POST")
+async def generate_milestones(user_id):
+    print(f"Starting generate_milestones for user_id: {user_id}")
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+    if not OPENAI_API_KEY:
+        print("Error: OPENAI_API_KEY not found in environment variables")
+        return format_error_response("OpenAI API key not found")
 
-    graph_query = "What are the goals and milestones of this user? How much time does the user plan to dedicate to execute the goals?"
-    graph_context = get_conversation_context(user_id=user_id, agenda=graph_query)
-    citations, advice = get_advice(graph_context)
-    goal = populate(advice)
-    return goal
+    try:
+        print("Generating conversation context with graph query")
+        graph_query = (
+            "What are the goals and milestones of this user? "
+            "How much time does the user plan to dedicate to "
+            "execute the goals?"
+        )
+
+        print(f"Calling get_conversation_context for user_id: {user_id}")
+        session_id = uuid.uuid4().hex
+        print(f"Generated new session_id: {session_id}")
+        zep = Zep(api_key=os.environ.get("ZEP_API_KEY"))
+        graph_context = query_zep(user_id, session_id, graph_query, zep)
+        print(f"Received graph_context with data: {graph_context}")
+
+        print("Calling get_advice with graph context")
+        citations, advice = get_advice.remote(graph_context)
+        print(f"Received advice with length: {len(advice)}")
+
+        print("Calling populate with advice to generate goal structure")
+        goal = populate(advice, OPENAI_API_KEY)
+        print(
+            f"Generated goal with title: "
+            f"{goal.title if hasattr(goal, 'title') else 'No title'}"
+        )
+
+        return {
+            "status": "success",
+            "data": {
+                "user_id": user_id,
+                "goal": goal,
+            },
+            "message": "Agenda generated successfully",
+        }
+    except Exception as e:
+        print(f"Error in generate_milestones: {str(e)}")
+        import traceback
+
+        traceback.print_exc()
+        return format_error_response(str(e))
 
 
 # Todo: implement a tool to get some context/information live in conversation

@@ -91,3 +91,28 @@ def convert_to_zep_messages(conversation):
 
     # Could not process the conversation format
     raise ValueError(f"Unsupported conversation format: {type(conversation)}")
+
+
+def query_zep(user_id, session_id, query, zep_client):
+    print(f"Starting get_conversation_context for user_id: {user_id}")
+    print(f"Agenda: {query}")
+
+    print(
+        f"Adding new session with user_id: {user_id}, session_id: {session_id}"
+    )
+    zep_client.memory.add_session(user_id=user_id, session_id=session_id)
+
+    print(f"Adding system message with agenda to session: {session_id}")
+    zep_client.memory.add(
+        session_id=session_id,
+        messages=[Message(role_type="system", content=query)],
+    )
+
+    print(f"Retrieving memory for session: {session_id}")
+    memory = zep_client.memory.get(session_id=session_id)
+    context_string = memory.context
+    print(
+        f"Retrieved context with length: "
+        f"{len(context_string) if context_string else 0}"
+    )
+    return context_string
