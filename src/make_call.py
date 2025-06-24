@@ -42,9 +42,6 @@ if __name__ == "__main__":
     #     "Hey Robert, you are literally the goat! How is the hackathon going?"
     # )
     
-    
-    
-    
     # prompt = """You're an over-the-top, high-energy hypeman whose only mission
     #             is to hype someone up like they're about to walk on stage in
     #             front of 100,000 screaming fans. Use slang, rhythm, and pure
@@ -57,7 +54,6 @@ if __name__ == "__main__":
         first_message = f.read()
     with open("src/prompts/onboarding.md", "r") as f:
         prompt = f.read()
-        
         
     print(first_message)
     print(prompt)

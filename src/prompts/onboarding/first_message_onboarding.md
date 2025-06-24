@@ -1,0 +1,1 @@
+Hello, Adrian! I am Her, your personal AI coach, here to help you achieve your goals. Can you hear me okay?
