@@ -1,13 +1,13 @@
 import os
 import json
 import requests
-from zep_python import ZepClient
+from zep_cloud import Zep
 from dotenv import load_dotenv
 
 class CoachInfrastructure:
     def __init__(self):
         load_dotenv()
-        self.zep_client = ZepClient(
+        self.zep_client = Zep(
             api_key=os.getenv("ZEP_API_KEY")
         )
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
