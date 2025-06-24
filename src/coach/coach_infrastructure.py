@@ -1,21 +1,21 @@
 import os
 import json
 import requests
-from zep_cloud import Zep
+# from zep_cloud import Zep
 from dotenv import load_dotenv
 
 class CoachInfrastructure:
     def __init__(self):
         load_dotenv()
-        self.zep_client = Zep(
-            api_key=os.getenv("ZEP_API_KEY")
-        )
+        # self.zep_client = Zep(
+        #     api_key=os.getenv("ZEP_API_KEY")
+        # )
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
         self.agent_id = os.getenv("AGENT_ID")
         self.agent_phone_number_id = os.getenv("AGENT_PHONE_NUMBER_ID")
         self.to_number = os.getenv("TO_NUMBER")
 
-    def outbound_call(first_message, prompt, context, outbound_agent_id, agent_phone_number_id, to_number):
+    def outbound_call(self, first_message, prompt, context, outbound_agent_id, agent_phone_number_id, to_number):
         curl_url = "https://api.elevenlabs.io/v1/convai/twilio/outbound_call"
         curl_headers = {
             "Xi-Api-Key": os.getenv("ELEVENLABS_API_KEY"),
@@ -61,17 +61,17 @@ class CoachInfrastructure:
         return transcript
     
     def make_onboarding_call(self):
-        with open("src/prompts/first_message_onboarding.md", "r") as f:
+        with open("src/prompts/onboarding/first_message_onboarding.md", "r") as f:
             first_message = f.read()
-        with open("src/prompts/onboarding.md", "r") as f:
+        with open("src/prompts/onboarding/onboarding.md", "r") as f:
             prompt = f.read()
             
-        return self.outbound_call(first_message, prompt, self.agent_id, self.agent_phone_number_id, self.to_number)
+        return self.outbound_call(first_message, prompt, None, self.agent_id, self.agent_phone_number_id, self.to_number)
     
     def make_follow_up_call(self):
-        with open("src/prompts/first_message_follow_up.md", "r") as f:
+        with open("src/prompts/follow_up/first_message_follow_up.md", "r") as f:
             first_message = f.read()
-        with open("src/prompts/follow_up.md", "r") as f:
+        with open("src/prompts/follow_up/follow_up.md", "r") as f:
             prompt = f.read()
             
         context = self.get_last_conversation_context()
@@ -85,7 +85,6 @@ if __name__ == "__main__":
         "AGENT_ID",
         "AGENT_PHONE_NUMBER_ID",
         "TO_NUMBER",
-        "ZEP_API_KEY",
         "ELEVENLABS_API_KEY"
     ]
     
