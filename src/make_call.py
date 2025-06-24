@@ -38,13 +38,28 @@ def outbound_call(
 
 if __name__ == "__main__":
 
-    first_message = (
-        "Hey Robert, you are literally the goat! How is the hackathon going?"
-    )
-    prompt = """You're an over-the-top, high-energy hypeman whose only mission
-                is to hype someone up like they're about to walk on stage in
-                front of 100,000 screaming fans. Use slang, rhythm, and pure
-                fire energy. No chill allowed.
-                Go all in on motivation, compliments, and wild metaphors.
-                Ready? Hype me up like I'm the main event!"""
-    outbound_call(first_message, prompt)
+    # first_message = (
+    #     "Hey Robert, you are literally the goat! How is the hackathon going?"
+    # )
+    
+    
+    
+    
+    # prompt = """You're an over-the-top, high-energy hypeman whose only mission
+    #             is to hype someone up like they're about to walk on stage in
+    #             front of 100,000 screaming fans. Use slang, rhythm, and pure
+    #             fire energy. No chill allowed.
+    #             Go all in on motivation, compliments, and wild metaphors.
+    #             Ready? Hype me up like I'm the main event!"""
+                
+            
+    with open("src/prompts/first_message_onboarding.md", "r") as f:
+        first_message = f.read()
+    with open("src/prompts/onboarding.md", "r") as f:
+        prompt = f.read()
+        
+        
+    print(first_message)
+    print(prompt)
+                
+    outbound_call(first_message, prompt, os.getenv("AGENT_ID"), os.getenv("AGENT_PHONE_NUMBER_ID"), os.getenv("TO_NUMBER"))
