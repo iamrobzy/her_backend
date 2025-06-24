@@ -15,12 +15,15 @@ class CoachInfrastructure:
         self.agent_phone_number_id = os.getenv("AGENT_PHONE_NUMBER_ID")
         self.to_number = os.getenv("TO_NUMBER")
 
-    def outbound_call(first_message, prompt, outbound_agent_id, agent_phone_number_id, to_number):
+    def outbound_call(first_message, prompt, context, outbound_agent_id, agent_phone_number_id, to_number):
         curl_url = "https://api.elevenlabs.io/v1/convai/twilio/outbound_call"
         curl_headers = {
             "Xi-Api-Key": os.getenv("ELEVENLABS_API_KEY"),
             "Content-Type": "application/json",
         }
+        
+        if context:
+            prompt = f"{prompt}\n\n Current user context: {context}"
 
         curl_data = {
             "agent_id": outbound_agent_id,
@@ -41,13 +44,39 @@ class CoachInfrastructure:
         )
         return curl_response.json()
     
-    def make_outbound_call(self):
+    # TODO: change to get user context from Zep, not just from previous conversation on ElevenLabs
+    def get_last_conversation_context(self):
+        curl_url = f"https://api.elevenlabs.io/v1/convai/conversations/{self.last_conversation_id}"
+        curl_headers = {
+            "Xi-Api-Key": os.getenv("ELEVENLABS_API_KEY"),
+            "Content-Type": "application/json",
+        }
+        
+        response = requests.get(
+            curl_url, headers=curl_headers
+        ).json()
+        
+        transcript = response["transcript"]
+        print(f"Transcript of last conversation: {transcript}")
+        return transcript
+    
+    def make_onboarding_call(self):
         with open("src/prompts/first_message_onboarding.md", "r") as f:
             first_message = f.read()
         with open("src/prompts/onboarding.md", "r") as f:
             prompt = f.read()
             
         return self.outbound_call(first_message, prompt, self.agent_id, self.agent_phone_number_id, self.to_number)
+    
+    def make_follow_up_call(self):
+        with open("src/prompts/first_message_follow_up.md", "r") as f:
+            first_message = f.read()
+        with open("src/prompts/follow_up.md", "r") as f:
+            prompt = f.read()
+            
+        context = self.get_last_conversation_context()
+        
+        return self.outbound_call(first_message, prompt, context, self.agent_id, self.agent_phone_number_id, self.to_number)
 
 if __name__ == "__main__":
     coach_infrastructure = CoachInfrastructure()
@@ -64,8 +93,12 @@ if __name__ == "__main__":
         if not os.getenv(var):
             raise ValueError(f"Environment variable {var} is not set")
     
-    outbound_call_response = coach_infrastructure.make_outbound_call()
+    onboarding_call_response = coach_infrastructure.make_onboarding_call()
+    coach_infrastructure.last_conversation_id = onboarding_call_response["conversation_id"]
     
-    print(outbound_call_response)
-    
-    
+    # Wait for user to finish onboarding call
+    input("Press Enter to trigger follow-up call...")
+
+    # Make follow-up call
+    follow_up_response = coach_infrastructure.make_follow_up_call()
+    print("Follow-up call response:", follow_up_response)
