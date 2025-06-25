@@ -8,8 +8,8 @@ class CoachInfrastructure:
     CONVERSATION_IDS_FILE = "conversation_ids.json"
     
     ONBOARDING_PROMPT_FILE = "src/prompts/personality/personality.md"
-    FOLLOW_UP_PROMPT_FILE = "src/prompts/follow_up/follow_up.md"
-    ONBOARDING_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/personality/personality.md"
+    FOLLOW_UP_PROMPT_FILE = "src/prompts/personality/personality.md"
+    ONBOARDING_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/onboarding/first_message_onboarding.md"
     FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/follow_up/first_message_follow_up.md"
     
     def __init__(self):
