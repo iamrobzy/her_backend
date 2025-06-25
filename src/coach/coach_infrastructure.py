@@ -76,7 +76,7 @@ class CoachInfrastructure:
             curl_url, headers=curl_headers, data=json.dumps(curl_data)
         )
         
-        self._save_conversation_id(curl_response.json()["conversation_id"])
+        # self._save_conversation_id(curl_response.json()["conversation_id"])
         
         return curl_response.json()
     
