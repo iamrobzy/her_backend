@@ -12,6 +12,27 @@ class CoachInfrastructure:
     ONBOARDING_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/onboarding/first_message_onboarding.md"
     FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/follow_up/first_message_follow_up.md"
     
+    ATOMIC_HABITS_PROMPT_FILE = "src/prompts/books/atomic_habits_prompt.md"
+    
+    def create_system_prompt(self, flow_stage_file_name: str):
+        system_prompt = ""
+        
+        FILES = [
+            self.ATOMIC_HABITS_PROMPT_FILE,
+        ]
+        
+        with open(flow_stage_file_name, "r") as f:
+            system_prompt += f.read()
+            system_prompt += "\n\n"
+            
+        for file_name in FILES:
+            with open(file_name, "r") as f:
+                system_prompt += f.read()
+                system_prompt += "\n\n"
+                
+        return system_prompt
+        
+            
     def __init__(self):
         load_dotenv()
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
@@ -76,7 +97,7 @@ class CoachInfrastructure:
             curl_url, headers=curl_headers, data=json.dumps(curl_data)
         )
         
-        # self._save_conversation_id(curl_response.json()["conversation_id"])
+        self._save_conversation_id(curl_response.json()["conversation_id"])
         
         return curl_response.json()
     
@@ -136,16 +157,15 @@ class CoachInfrastructure:
     def make_onboarding_call(self):
         with open(self.ONBOARDING_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
             first_message = f.read()
-        with open(self.ONBOARDING_PROMPT_FILE, "r") as f:
-            prompt = f.read()
+        prompt = self.create_system_prompt(self.ONBOARDING_PROMPT_FILE)
             
         return self.outbound_call(first_message, prompt, None, self.agent_id, self.agent_phone_number_id, self.to_number)
     
     def make_follow_up_call(self):
         with open(self.FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
             first_message = f.read()
-        with open(self.FOLLOW_UP_PROMPT_FILE, "r") as f:
-            prompt = f.read()
+            
+        prompt = self.create_system_prompt(self.FOLLOW_UP_PROMPT_FILE)
             
         context = self.get_last_conversation_transcript()
         
