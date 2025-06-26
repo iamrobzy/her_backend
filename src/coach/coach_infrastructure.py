@@ -25,10 +25,10 @@ class CoachInfrastructure:
     def create_system_prompt(self, flow_stage_file_name: str):
         system_prompt = ""
         
-        PERSONALITY_PROMPT_FILE = "src/prompts/personality/cute_pushy_personality.md"
+        PERSONALITY_PROMPT_FILE = "src/prompts/personality/synthesis_personality.md"
         
         FILES = [
-            self.ATOMIC_HABITS_PROMPT_FILE,
+            # self.ATOMIC_HABITS_PROMPT_FILE,
         ]
         
         with open(PERSONALITY_PROMPT_FILE, "r") as f:
