@@ -25,7 +25,7 @@ class CoachInfrastructure:
     def create_system_prompt(self, flow_stage_file_name: str):
         system_prompt = ""
         
-        PERSONALITY_PROMPT_FILE = "src/prompts/personality/her_2.md"
+        PERSONALITY_PROMPT_FILE = "src/prompts/personality/pushy_2.md"
         
         FILES = [
             # self.ATOMIC_HABITS_PROMPT_FILE,
