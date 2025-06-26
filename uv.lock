@@ -435,6 +435,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "azure-core" },
     { name = "azure-identity" },
+    { name = "click" },
     { name = "elevenlabs" },
     { name = "fastapi" },
     { name = "graphiti-core" },
@@ -444,12 +445,14 @@ dependencies = [
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "uvicorn" },
+    { name = "zep-cloud" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "azure-core", specifier = ">=1.30.0" },
     { name = "azure-identity", specifier = ">=1.15.0" },
+    { name = "click", specifier = ">=8.1.8" },
     { name = "elevenlabs", specifier = ">=0.2.26" },
     { name = "fastapi", specifier = ">=0.89.0" },
     { name = "graphiti-core", specifier = ">=0.1.0" },
@@ -459,6 +462,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "uvicorn", specifier = ">=0.24.0" },
+    { name = "zep-cloud", specifier = ">=2.16.0" },
 ]
 
 [[package]]
@@ -1307,4 +1311,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/24/fd/725b8e73ac2a50e78a4534ac43c6addf5c1c2d65380dd48a9169cc6739a9/yarl-1.20.1-cp313-cp313t-win32.whl", hash = "sha256:b121ff6a7cbd4abc28985b6028235491941b9fe8fe226e6fdc539c977ea1739d", size = 86591 },
     { url = "https://files.pythonhosted.org/packages/94/c3/b2e9f38bc3e11191981d57ea08cab2166e74ea770024a646617c9cddd9f6/yarl-1.20.1-cp313-cp313t-win_amd64.whl", hash = "sha256:541d050a355bbbc27e55d906bc91cb6fe42f96c01413dd0f4ed5a5240513874f", size = 93003 },
     { url = "https://files.pythonhosted.org/packages/b4/2d/2345fce04cfd4bee161bf1e7d9cdc702e3e16109021035dbb24db654a622/yarl-1.20.1-py3-none-any.whl", hash = "sha256:83b8eb083fe4683c6115795d9fc1cfaf2cbbefb19b3a1cb68f6527460f483a77", size = 46542 },
+]
+
+[[package]]
+name = "zep-cloud"
+version = "2.16.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d0/f1/baf47acb1c735ceb9fdc57505443264c9c7959356662f5f668e4542bc972/zep_cloud-2.16.0.tar.gz", hash = "sha256:6ba34b29f55d4bc087c24fcf844201b90fbc4647f100a23ae89c166335ead627", size = 50250 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/43/53/7f8e90e44df38b9773bc46e7003d3bdca45adbff0757bc85e1d3df530731/zep_cloud-2.16.0-py3-none-any.whl", hash = "sha256:3798ce2513b0b662529d396e4dc26e26b893546a2850cf0cd9d3e95789cd809a", size = 98217 },
 ]

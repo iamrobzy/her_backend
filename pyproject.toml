@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "azure-core>=1.30.0",
     "azure-identity>=1.15.0",
+    "click>=8.1.8",
     "elevenlabs>=0.2.26",
     "fastapi>=0.89.0",
     "graphiti-core>=0.1.0",
@@ -16,4 +17,5 @@ dependencies = [
     "pydantic>=2.0.0",
     "python-dotenv>=1.0.0",
     "uvicorn>=0.24.0",
+    "zep-cloud>=2.16.0",
 ]

@@ -1,1 +1,0 @@
-Hello, Robert! I am Her, you're personal AI coach, here to help you achieve your goals. Can you hear me okay?
