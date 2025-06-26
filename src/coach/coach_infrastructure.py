@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 class CoachInfrastructure:
     CONVERSATION_IDS_FILE = "conversation_ids.json"
     
-    ONBOARDING_PROMPT_FILE = "src/prompts/personality/pushier_personality.md"
-    FOLLOW_UP_PROMPT_FILE = "src/prompts/personality/pushier_personality.md"
+    ONBOARDING_PROMPT_FILE = "src/prompts/personality/cute_pushy_personality.md"
+    FOLLOW_UP_PROMPT_FILE = "src/prompts/personality/cute_pushy_personality.md"
     ONBOARDING_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/onboarding/first_message_onboarding.md"
     FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/follow_up/first_message_follow_up.md"
     
@@ -168,5 +168,20 @@ class CoachInfrastructure:
         prompt = self.create_system_prompt(self.FOLLOW_UP_PROMPT_FILE)
             
         context = self.get_last_conversation_transcript()
+        
+        return self.outbound_call(first_message, prompt, context, self.agent_id, self.agent_phone_number_id, self.to_number)
+    
+    
+    def hard_coded_future_follow_up_call(self):
+        FUTURE_FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/follow_up/future_follow_up_first_message.md"
+        HARD_CODED_FUTURE_CONTEXT = "src/prompts/follow_up/hard_coded_future_context.md"
+        
+        with open(self.FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
+            first_message = f.read()
+            
+        with open(HARD_CODED_FUTURE_CONTEXT, "r") as f:
+            context = f.read()
+            
+        prompt = self.create_system_prompt(self.FOLLOW_UP_PROMPT_FILE)
         
         return self.outbound_call(first_message, prompt, context, self.agent_id, self.agent_phone_number_id, self.to_number)
