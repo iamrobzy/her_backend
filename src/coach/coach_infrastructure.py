@@ -7,10 +7,18 @@ from dotenv import load_dotenv
 class CoachInfrastructure:
     CONVERSATION_IDS_FILE = "conversation_ids.json"
     
-    ONBOARDING_PROMPT_FILE = "src/prompts/personality/cute_pushy_personality.md"
-    FOLLOW_UP_PROMPT_FILE = "src/prompts/personality/cute_pushy_personality.md"
+    ONBOARDING_PROMPT_FILE = "src/prompts/personality/demo_tryout.md"
+    FOLLOW_UP_PROMPT_FILE = "src/prompts/personality/demo_tryout.md"
     ONBOARDING_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/onboarding/first_message_onboarding.md"
     FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/follow_up/first_message_follow_up.md"
+    
+    DEMO_ONBOARDING_PROMPT_FILE = "src/prompts/demo/onboarding.md"
+    DEMO_FOLLOW_UP_PROMPT_FILE = "src/prompts/demo/follow_up.md"
+    DEMO_FOLLOW_UP_FUTURE_PROMPT_FILE = "src/prompts/demo/future_follow_up.md"
+    
+    DEMO_FIRST_MESSAGE_ONBOARDING_PROMPT_FILE = "src/prompts/demo/fm_onboarding.md"
+    DEMO_FIRST_MESSAGE_FOLLOW_UP_PROMPT_FILE = "src/prompts/demo/fm_follow_up.md"
+    DEMO_FIRST_MESSAGE_FUTURE_PROMPT_FILE = "src/prompts/demo/fm_future.md"
     
     ATOMIC_HABITS_PROMPT_FILE = "src/prompts/books/atomic_habits_prompt.md"
     
@@ -155,14 +163,14 @@ class CoachInfrastructure:
         return [(conversation["conversation_id"], datetime.datetime.fromtimestamp(conversation["start_time_unix_secs"])) for conversation in response["conversations"]]
     
     def make_onboarding_call(self):
-        with open(self.ONBOARDING_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
+        with open(self.DEMO_FIRST_MESSAGE_ONBOARDING_PROMPT_FILE, "r") as f:
             first_message = f.read()
         prompt = self.create_system_prompt(self.ONBOARDING_PROMPT_FILE)
             
         return self.outbound_call(first_message, prompt, None, self.agent_id, self.agent_phone_number_id, self.to_number)
     
     def make_follow_up_call(self):
-        with open(self.FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
+        with open(self.DEMO_FOLLOW_UP_PROMPT_FILE, "r") as f:
             first_message = f.read()
             
         prompt = self.create_system_prompt(self.FOLLOW_UP_PROMPT_FILE)
@@ -173,13 +181,10 @@ class CoachInfrastructure:
     
     
     def hard_coded_future_follow_up_call(self):
-        FUTURE_FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/follow_up/future_follow_up_first_message.md"
-        HARD_CODED_FUTURE_CONTEXT = "src/prompts/follow_up/hard_coded_future_context.md"
-        
-        with open(self.FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
+        with open(self.DEMO_FIRST_MESSAGE_FUTURE_PROMPT_FILE, "r") as f:
             first_message = f.read()
             
-        with open(HARD_CODED_FUTURE_CONTEXT, "r") as f:
+        with open(self.DEMO_FOLLOW_UP_FUTURE_PROMPT_FILE, "r") as f:
             context = f.read()
             
         prompt = self.create_system_prompt(self.FOLLOW_UP_PROMPT_FILE)

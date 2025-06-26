@@ -1,0 +1,3 @@
+Hi! This is Her calling. I'm your new personal coach, and I'm honestly so excited to finally talk with you!
+I'm going to get to know you really well and become that friend who lovingly refuses to let you give up on yourself. This call is about five minutes—I want to understand who you are and pick one thing we can start working on together.
+Sound good? Tell me about your day today—what felt good and what was frustrating?
