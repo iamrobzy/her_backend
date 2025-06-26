@@ -35,9 +35,9 @@ class CoachInfrastructure:
             system_prompt += f.read()
             system_prompt += "\n\n"
         
-        with open(flow_stage_file_name, "r") as f:
-            system_prompt += f.read()
-            system_prompt += "\n\n"
+        # with open(flow_stage_file_name, "r") as f:
+        #     system_prompt += f.read()
+        #     system_prompt += "\n\n"
             
         for file_name in FILES:
             with open(file_name, "r") as f:
