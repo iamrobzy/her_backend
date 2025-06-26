@@ -176,10 +176,10 @@ class CoachInfrastructure:
         return self.outbound_call(first_message, prompt, None, self.agent_id, self.agent_phone_number_id, self.to_number)
     
     def make_follow_up_call(self):
-        with open(self.DEMO_FOLLOW_UP_PROMPT_FILE, "r") as f:
+        with open(self.DEMO_FIRST_MESSAGE_FOLLOW_UP_PROMPT_FILE, "r") as f:
             first_message = f.read()
             
-        prompt = self.create_system_prompt(self.FOLLOW_UP_PROMPT_FILE)
+        prompt = self.create_system_prompt(self.DEMO_FOLLOW_UP_PROMPT_FILE)
             
         context = self.get_last_conversation_transcript()
         
