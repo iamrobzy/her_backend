@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 class CoachInfrastructure:
     CONVERSATION_IDS_FILE = "conversation_ids.json"
     
-    ONBOARDING_PROMPT_FILE = "src/prompts/personality/demo_tryout.md"
-    FOLLOW_UP_PROMPT_FILE = "src/prompts/personality/demo_tryout.md"
-    ONBOARDING_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/onboarding/first_message_onboarding.md"
-    FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/follow_up/first_message_follow_up.md"
+    ONBOARDING_PROMPT_FILE = "src/prompts/jariks_prompts/onboarding_2.1.md"
+    FOLLOW_UP_PROMPT_FILE = "src/prompts/jariks_prompts/follow_up_jarik.md"
+    ONBOARDING_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/demo/fm_onboarding.md"
+    FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE = "src/prompts/demo/fm_follow_up.md"
     
     DEMO_ONBOARDING_PROMPT_FILE = "src/prompts/demo/onboarding.md"
     DEMO_FOLLOW_UP_PROMPT_FILE = "src/prompts/demo/follow_up.md"
@@ -25,7 +25,8 @@ class CoachInfrastructure:
     def create_system_prompt(self, flow_stage_file_name: str):
         system_prompt = ""
         
-        PERSONALITY_PROMPT_FILE = "src/prompts/personality/pushy_2.md"
+        PERSONALITY_PROMPT_FILE = "src/prompts/jariks_prompts/personality_jarik.md"
+        
         
         FILES = [
             # self.ATOMIC_HABITS_PROMPT_FILE,
@@ -35,9 +36,9 @@ class CoachInfrastructure:
             system_prompt += f.read()
             system_prompt += "\n\n"
         
-        # with open(flow_stage_file_name, "r") as f:
-        #     system_prompt += f.read()
-        #     system_prompt += "\n\n"
+        with open(flow_stage_file_name, "r") as f:
+            system_prompt += f.read()
+            system_prompt += "\n\n"
             
         for file_name in FILES:
             with open(file_name, "r") as f:
@@ -169,17 +170,17 @@ class CoachInfrastructure:
         return [(conversation["conversation_id"], datetime.datetime.fromtimestamp(conversation["start_time_unix_secs"])) for conversation in response["conversations"]]
     
     def make_onboarding_call(self):
-        with open(self.DEMO_FIRST_MESSAGE_ONBOARDING_PROMPT_FILE, "r") as f:
+        with open(self.ONBOARDING_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
             first_message = f.read()
         prompt = self.create_system_prompt(self.ONBOARDING_PROMPT_FILE)
             
         return self.outbound_call(first_message, prompt, None, self.agent_id, self.agent_phone_number_id, self.to_number)
     
     def make_follow_up_call(self):
-        with open(self.DEMO_FIRST_MESSAGE_FOLLOW_UP_PROMPT_FILE, "r") as f:
+        with open(self.FOLLOW_UP_FIRST_MESSAGE_PROMPT_FILE, "r") as f:
             first_message = f.read()
             
-        prompt = self.create_system_prompt(self.DEMO_FOLLOW_UP_PROMPT_FILE)
+        prompt = self.create_system_prompt(self.FOLLOW_UP_PROMPT_FILE)
             
         context = self.get_last_conversation_transcript()
         

@@ -1,1 +1,1 @@
-"Hey! It's Her. How are you feeling about everything today?"
+"Hey, you know who it is. Just wanted to check in on how things have progressed. You know - make sure I live up to my role as accountability partner."

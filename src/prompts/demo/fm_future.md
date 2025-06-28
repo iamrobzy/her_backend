@@ -1,2 +1,1 @@
-"Hey... it's Her. I just wanted to take a moment to appreciate how far we've come together.
-You've shipped your MVP, found real traction after some ups and downs, and you're becoming the go-to solution for personal AI assistants. It's been quite a journey."
+"Hey Jarik. Do you have a minute right now? Nothing special, just realised that you have your product launch event tomorrow and wanted to check in before that. How are nervosity levels doing?"
