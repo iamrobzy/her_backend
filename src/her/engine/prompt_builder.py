@@ -11,7 +11,7 @@ PERSONALITY_FILE = PROMPTS_ROOT / "personality" / "personality.md"
 FLOWS_DIR = PROMPTS_ROOT / "flows"
 
 FLOW_STAGE_FILE_MAP = {
-    "onboarding": PROMPTS_ROOT / "flows" / "onboarding.md",
+    "onboarding": PROMPTS_ROOT / "flows" / "onboarding2_ui.md",
     "followup":   PROMPTS_ROOT / "flows" / "followup.md",
     # add more as you create them
 }

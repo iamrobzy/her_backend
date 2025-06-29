@@ -1,1 +1,0 @@
-"Hey! It's Her. How are you feeling about everything today?"
